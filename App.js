@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AsyncStorage } from "react-native";
 import { NavigationNativeContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -7,14 +7,15 @@ import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
+import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [userToken, setUserToken] = React.useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
 
   const setToken = async token => {
     if (token) {
@@ -26,7 +27,7 @@ export default function App() {
     setUserToken(token);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       // We should also handle error for production apps
@@ -49,9 +50,14 @@ export default function App() {
           <Stack.Screen name="Splash" component={() => null} />
         ) : userToken === null ? (
           // No token found, user isn't signed in
-          <Stack.Screen name="SignIn" options={{ header: () => null }}>
-            {() => <SignInScreen setToken={setToken} />}
-          </Stack.Screen>
+          <>
+            <Stack.Screen name="SignIn" options={{ header: () => null }}>
+              {() => <SignInScreen setToken={setToken} />}
+            </Stack.Screen>
+            <Stack.Screen name="SignUp">
+              {() => <SignUpScreen setToken={setToken} />}
+            </Stack.Screen>
+          </>
         ) : (
           // User is signed in
           <Stack.Screen name="Tab" options={{ header: () => null }}>

@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { useNavigation } from "@react-navigation/core";
+import { Button, Text, TextInput, View, TouchableOpacity } from "react-native";
 
 export default function SignInScreen({ setToken }) {
+  const navigation = useNavigation();
   return (
     <View>
       <View>
@@ -11,12 +13,18 @@ export default function SignInScreen({ setToken }) {
         <TextInput placeholder="Password" secureTextEntry={true} />
         <Button
           title="Sign in"
-          mode="contained"
           onPress={async () => {
             const userToken = "secret-token";
             setToken(userToken);
           }}
         />
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("SignUp");
+          }}
+        >
+          <Text>Create an account</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
