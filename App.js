@@ -1,73 +1,16 @@
-import * as React from "react";
-import { AsyncStorage, Button, Text, TextInput, View } from "react-native";
+import React from "react";
+import { AsyncStorage } from "react-native";
 import { NavigationNativeContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useNavigation, useRoute } from "@react-navigation/core";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import HomeScreen from "./containers/HomeScreen";
+import ProfileScreen from "./containers/ProfileScreen";
+import SignInScreen from "./containers/SignInScreen";
+import SettingsScreen from "./containers/SettingsScreen";
 
-// TODO
-// tab navigation ?
-// log out
-
-function SplashScreen() {
-  return (
-    <View>
-      <Text>Loading...</Text>
-    </View>
-  );
-}
-
-function HomeScreen() {
-  const navigation = useNavigation();
-  return (
-    <View>
-      <Text>Welcome home!</Text>
-      <Button
-        title="Go to Settings"
-        onPress={() => {
-          navigation.navigate("Settings", { itemId: 123 });
-        }}
-      />
-    </View>
-  );
-}
-
-function SettingsScreen({ setToken, someParam }) {
-  const { params } = useRoute();
-  console.log(params.itemId); // 123
-  return (
-    <View>
-      <Text>Hello Settings: </Text>
-
-      <Button
-        title="Log Out"
-        onPress={() => {
-          setToken(null);
-        }}
-      />
-    </View>
-  );
-}
-
-function SignInScreen({ setToken }) {
-  return (
-    <View>
-      <View>
-        <Text>Name: </Text>
-        <TextInput placeholder="Username" />
-        <Text>Password: </Text>
-        <TextInput placeholder="Password" secureTextEntry={true} />
-        <Button
-          title="Sign in"
-          mode="contained"
-          onPress={async () => {
-            const userToken = "secret-token";
-            setToken(userToken);
-          }}
-        />
-      </View>
-    </View>
-  );
-}
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -98,8 +41,6 @@ export default function App() {
     bootstrapAsync();
   }, []);
 
-  const Stack = createStackNavigator();
-
   return (
     <NavigationNativeContainer>
       <Stack.Navigator>
@@ -113,14 +54,61 @@ export default function App() {
           </Stack.Screen>
         ) : (
           // User is signed in
-          <>
-            <Stack.Screen name="Home" options={{ title: "My App" }}>
-              {() => <HomeScreen />}
-            </Stack.Screen>
-            <Stack.Screen name="Settings">
-              {() => <SettingsScreen setToken={setToken} />}
-            </Stack.Screen>
-          </>
+          <Tab.Screen name="Tab" options={{ header: () => null }}>
+            {() => (
+              <Tab.Navigator
+                screenOptions={({ route }) => {
+                  return {
+                    tabBarIcon: ({ focused, color, size }) => {
+                      let iconName;
+                      if (route.name === "Settings") {
+                        iconName = `ios-options`;
+                      } else {
+                        iconName = `ios-home`;
+                      }
+                      return (
+                        <Ionicons name={iconName} size={size} color={color} />
+                      );
+                    },
+                    title: route.name // know issue : route.name shouldn't be undefined
+                  };
+                }}
+                tabBarOptions={{
+                  activeTintColor: "tomato",
+                  inactiveTintColor: "gray"
+                }}
+              >
+                <Tab.Screen>
+                  {() => (
+                    <Stack.Navigator>
+                      <Stack.Screen name="Home" options={{ title: "My App" }}>
+                        {() => <HomeScreen />}
+                      </Stack.Screen>
+
+                      <Stack.Screen
+                        name="Profile"
+                        options={{ title: "User Profile" }}
+                      >
+                        {() => <ProfileScreen />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+                <Tab.Screen name="Settings">
+                  {() => (
+                    <Stack.Navigator>
+                      <Stack.Screen
+                        name="Settings"
+                        options={{ title: "Settings" }}
+                      >
+                        {() => <SettingsScreen setToken={setToken} />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+              </Tab.Navigator>
+            )}
+          </Tab.Screen>
         )}
       </Stack.Navigator>
     </NavigationNativeContainer>
