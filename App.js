@@ -81,7 +81,14 @@ export default function App() {
                 <Tab.Screen>
                   {() => (
                     <Stack.Navigator>
-                      <Stack.Screen name="Home" options={{ title: "My App" }}>
+                      <Stack.Screen
+                        name="Home"
+                        options={{
+                          title: "My App",
+                          headerStyle: { backgroundColor: "red" },
+                          headerTitleStyle: { color: "white" }
+                        }}
+                      >
                         {() => <HomeScreen />}
                       </Stack.Screen>
 
