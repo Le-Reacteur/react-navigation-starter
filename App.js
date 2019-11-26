@@ -54,7 +54,7 @@ export default function App() {
           </Stack.Screen>
         ) : (
           // User is signed in
-          <Tab.Screen name="Tab" options={{ header: () => null }}>
+          <Stack.Screen name="Tab" options={{ header: () => null }}>
             {() => (
               <Tab.Navigator
                 screenOptions={({ route }) => {
@@ -70,7 +70,7 @@ export default function App() {
                         <Ionicons name={iconName} size={size} color={color} />
                       );
                     },
-                    title: route.name // know issue : route.name shouldn't be undefined
+                    title: route.name === "undefined" ? "Home" : route.name // known issue : route.name shouldn't be undefined
                   };
                 }}
                 tabBarOptions={{
@@ -108,7 +108,7 @@ export default function App() {
                 </Tab.Screen>
               </Tab.Navigator>
             )}
-          </Tab.Screen>
+          </Stack.Screen>
         )}
       </Stack.Navigator>
     </NavigationNativeContainer>
